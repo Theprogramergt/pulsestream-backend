@@ -1,0 +1,40 @@
+# PulseStream Remote Extractor (Render backend)
+
+A small Flask API that wraps yt-dlp so it can run somewhere that allows shelling
+out (Render), since InfinityFree blocks `proc_open`/`exec`.
+
+## Endpoints
+
+- `POST /api/info.php` — body `{ "url": "..." }` → returns metadata JSON matching
+  what `pulsestream-redeploy/includes/remote_backend.php` expects.
+- `GET /api/download.php?url=...&format=mp4|mp3&quality=max|standard|compact` —
+  streams the media file directly.
+- `GET /healthz` — simple health check.
+
+## Deploying on Render
+
+1. Push this folder to a GitHub repo (or a subfolder of one).
+2. On Render: **New +** → **Web Service** → connect the repo.
+3. Root directory: point it at this folder if it's a subfolder (e.g. `render-backend`).
+4. Render will detect the `Dockerfile` automatically — pick **Free** instance type.
+5. (Optional) Set an environment variable `PS_SHARED_TOKEN` to a random secret
+   string, if you want to require a shared token from the PHP frontend.
+6. Deploy. You'll get a URL like `https://pulsestream-backend.onrender.com`.
+
+## Wiring it into config.php
+
+```php
+define('REMOTE_EXTRACTOR_BASE_URL', 'https://pulsestream-backend.onrender.com');
+define('REMOTE_INFO_PATH', '/api/info.php');
+define('REMOTE_DOWNLOAD_PATH', '/api/download.php');
+
+// Only if you set PS_SHARED_TOKEN above:
+define('REMOTE_SHARED_TOKEN', 'your-random-secret');
+```
+
+## Notes
+
+- Free Render web services spin down after ~15 min idle; the next request has a
+  30-50s cold start. Long yt-dlp/ffmpeg jobs on the free tier can also be slow —
+  fine for personal/demo use, not for heavy traffic.
+- No persistent disk is used; everything streams through memory/stdout.
