@@ -1,0 +1,5 @@
+echo "pulsestream/config.php" > .gitignore
+echo "pulsestream-redeploy/config.php" >> .gitignore
+echo "*.zip" >> .gitignore
+echo "pulsestream/downloads/extractor.log" >> .gitignore
+echo "pulsestream-redeploy/downloads/extractor.log" >> .gitignore
