@@ -19,7 +19,7 @@ define('FFMPEG_BIN', __DIR__ . DIRECTORY_SEPARATOR . 'bin' . DIRECTORY_SEPARATOR
 // ---- Remote extractor backend (for shared hosts like InfinityFree) --------
 // Leave empty to use local yt-dlp/ffmpeg execution.
 // Example: https://your-vps.example.com/pulsestream
-define('REMOTE_EXTRACTOR_BASE_URL', '');
+define('REMOTE_EXTRACTOR_BASE_URL', 'https://pulsestream-backend.onrender.com');
 define('REMOTE_INFO_PATH', '/api/info.php');
 define('REMOTE_DOWNLOAD_PATH', '/api/download.php');
 
