@@ -1,3 +1,4 @@
+```python
 import os
 import re
 import shutil
@@ -33,12 +34,27 @@ os.makedirs(TEMP_DIR, exist_ok=True)
 
 
 # ============================================================
+# yt-dlp / YouTube JavaScript configuration
+# ============================================================
+
+YTDLP_JS_OPTIONS = {
+    "js_runtimes": {
+        "deno": {},
+    },
+    "remote_components": {
+        "ejs": "npm",
+    },
+}
+
+
+# ============================================================
 # Authentication
 # ============================================================
 
 def check_token():
     """
     If PS_SHARED_TOKEN is empty, authentication is disabled.
+
     If PS_SHARED_TOKEN is configured on Render, the PHP frontend
     must send the matching X-PulseStream-Token header.
     """
@@ -185,6 +201,9 @@ def info():
         "no_warnings": True,
         "noplaylist": True,
         "skip_download": True,
+
+        # Modern YouTube JavaScript extraction
+        **YTDLP_JS_OPTIONS,
     }
 
     # --------------------------------------------------------
@@ -422,13 +441,12 @@ def download():
     try:
 
         with yt_dlp.YoutubeDL({
-
             "quiet": True,
-
             "no_warnings": True,
-
             "skip_download": True,
 
+            # Modern YouTube JavaScript extraction
+            **YTDLP_JS_OPTIONS,
         }) as ydl:
 
             probe = ydl.extract_info(
@@ -492,6 +510,13 @@ def download():
 
         "--socket-timeout",
         "60",
+
+        # Modern YouTube JavaScript extraction
+        "--js-runtimes",
+        "deno",
+
+        "--remote-components",
+        "ejs:npm",
     ]
 
     # --------------------------------------------------------
@@ -572,6 +597,9 @@ def download():
 
             stderr=subprocess.PIPE,
 
+            # Keep the current 10-minute limit for now.
+            # We will change the long-download architecture
+            # separately after YouTube extraction works.
             timeout=600,
 
             check=False,
@@ -803,3 +831,4 @@ if __name__ == "__main__":
         host="0.0.0.0",
         port=port
     )
+```
